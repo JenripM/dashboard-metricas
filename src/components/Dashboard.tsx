@@ -25,7 +25,8 @@ import {
   MousePointer2,
   Info,
   XCircle,
-  Zap
+  Zap,
+  Target
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -47,7 +48,8 @@ import {
   PolarAngleAxis,
   PolarRadiusAxis,
   Radar,
-  Sector
+  Sector,
+  Curve
 } from 'recharts';
 
 type TabType = 'general' | 'lengua' | 'discriminacion' | 'uni';
@@ -208,11 +210,11 @@ export default function Dashboard() {
         </nav>
 
         <div className="mt-auto pt-8 border-t border-slate-100">
-          <div className="bg-gradient-to-br from-indigo-900 to-slate-900 p-6 rounded-3xl text-white shadow-2xl group cursor-pointer overflow-hidden relative">
+          <div className="bg-gradient-to-br from-indigo-900 to-slate-900 p-6 rounded-3xl text-white shadow-2xl group cursor-pointer overflow-hidden relative border-l-4 border-l-indigo-400">
             <div className="absolute -right-4 -top-4 bg-indigo-500/20 h-24 w-24 rounded-full blur-2xl group-hover:bg-indigo-500/40 transition-all duration-500 animate-pulse" />
             <p className="text-xs font-bold text-indigo-300 mb-2 uppercase tracking-wider">Reporte Multianual</p>
             <p className="text-sm font-medium text-slate-300 mb-4 leading-relaxed relative z-10">Explora tendencias profundas.</p>
-            <button className="w-full bg-white/10 hover:bg-indigo-500 py-3 rounded-xl text-xs font-bold transition-all border border-white/10 flex items-center justify-center gap-2 relative z-10 hover:shadow-lg hover:shadow-indigo-500/30">
+            <button className="w-full bg-white/10 hover:bg-indigo-500 py-3 rounded-xl text-xs font-bold transition-all border border-white/10 flex items-center justify-center gap-2 relative z-10 hover:shadow-lg hover:shadow-indigo-500/30 active:scale-95">
               <Download size={14} /> Exportar Reporte
             </button>
           </div>
@@ -452,10 +454,12 @@ function GeneralTab({ factor, setGenero, setAnio, getFactorExcluding, activeFilt
 
       <div className="lg:col-span-12 card-premium overflow-hidden">
         <div className="flex items-center gap-4 mb-10">
-          <div className="h-14 w-14 bg-indigo-50 rounded-3xl flex items-center justify-center text-indigo-600 shadow-inner group-hover:scale-110 transition-transform"><Users size={28} /></div>
+          <div className="h-14 w-14 bg-indigo-50 rounded-3xl flex items-center justify-center text-indigo-600 shadow-inner group-hover:scale-110 transition-transform"><Target size={28} className="animate-pulse" /></div>
           <div>
             <h3 className="text-2xl font-black text-slate-900 font-outfit">Curva Demográfica por Edad</h3>
-            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Concentración de muestra generacional</p>
+            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1 flex items-center gap-2">
+              <Zap size={12} className="text-amber-500" /> Toca los puntos para interactuar
+            </p>
           </div>
         </div>
         <div className="h-80">
@@ -463,15 +467,34 @@ function GeneralTab({ factor, setGenero, setAnio, getFactorExcluding, activeFilt
             <AreaChart data={Object.entries(RAW_DATA.edad).map(([name, value]) => ({ name, value: Math.round(value * factor) }))}>
               <defs>
                 <linearGradient id="colorAge" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#4F46E5" stopOpacity={0.4}/>
+                  <stop offset="5%" stopColor="#4F46E5" stopOpacity={0.6}/>
                   <stop offset="95%" stopColor="#4F46E5" stopOpacity={0}/>
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="5 5" vertical={false} stroke="#f1f5f9" />
               <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fontWeight: 800, fill: '#64748b' }} />
               <YAxis axisLine={false} tickLine={false} hide />
-              <Tooltip content={<CustomTooltip />} />
-              <Area type="monotone" dataKey="value" stroke="#4F46E5" strokeWidth={6} fillOpacity={1} fill="url(#colorAge)" />
+              <Tooltip 
+                content={<CustomTooltip />} 
+                cursor={{ stroke: '#4F46E5', strokeWidth: 2, strokeDasharray: '5 5' }}
+              />
+              <Area 
+                type="monotone" 
+                dataKey="value" 
+                stroke="#4F46E5" 
+                strokeWidth={5} 
+                fillOpacity={1} 
+                fill="url(#colorAge)"
+                activeDot={{ 
+                  r: 10, 
+                  fill: '#fff', 
+                  stroke: '#4F46E5', 
+                  strokeWidth: 4,
+                  className: "animate-bounce"
+                }}
+                animationDuration={2000}
+                animationEasing="ease-in-out"
+              />
             </AreaChart>
           </ResponsiveContainer>
         </div>
