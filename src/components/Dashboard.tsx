@@ -593,7 +593,7 @@ function DiscriminacionTab({ factor, setAnio, getFactorExcluding, activeFilters 
               <Tooltip cursor={{ fill: 'rgba(244,63,94,0.03)', radius: 20 }} />
               <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ paddingBottom: 40 }} />
               <Bar dataKey="sí" name="Casos Reportados" stackId="a" fill="#F43F5E" radius={[0, 0, 0, 0]} barSize={80} className="cursor-pointer" activeBar={{ fill: '#FB7185' }} />
-              <Bar dataKey="no" name="Sin Reporte" stackId="a" fill="#10B981" radius={[20, 20, 0, 0]} barSize={80} className="cursor-pointer" activeBar={{ fill: '#34D399', radius: [20, 20, 0, 0] }} />
+              <Bar dataKey="no" name="Sin Reporte" stackId="a" fill="#10B981" radius={[20, 20, 0, 0]} barSize={80} className="cursor-pointer" activeBar={{ fill: '#34D399' }} />
             </BarChart>
           </ResponsiveContainer>
         </div>
