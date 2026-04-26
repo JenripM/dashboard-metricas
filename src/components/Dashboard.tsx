@@ -390,7 +390,7 @@ function GeneralTab({ factor, setGenero, setAnio, getFactorExcluding, activeFilt
               <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(55,138,221,0.05)', radius: 10 }} />
               <Bar 
                 dataKey="value" fill="#378ADD" radius={[12, 12, 4, 4]} barSize={50} className="cursor-pointer focus:outline-none" 
-                activeBar={<rect fill="#1D9E75" radius={[12, 12, 4, 4]} />}
+                activeBar={{ fill: '#1D9E75', radius: [12, 12, 4, 4] }}
               />
             </BarChart>
           </ResponsiveContainer>
@@ -516,8 +516,8 @@ function DiscriminacionTab({ factor, setAnio, getFactorExcluding, activeFilters 
               <YAxis axisLine={false} tickLine={false} />
               <Tooltip cursor={{ fill: 'rgba(226,75,74,0.02)', radius: 15 }} />
               <Legend verticalAlign="top" align="right" iconType="rect" wrapperStyle={{ paddingBottom: 20 }} />
-              <Bar dataKey="sí" name="Reportados" stackId="a" fill="#E24B4A" radius={[0, 0, 0, 0]} barSize={60} className="cursor-pointer" activeBar={<rect fill="#A32D2D" />} />
-              <Bar dataKey="no" name="Sin Casos" stackId="a" fill="#1D9E75" radius={[15, 15, 0, 0]} barSize={60} className="cursor-pointer" activeBar={<rect fill="#0F6E56" radius={[15, 15, 0, 0]} />} />
+              <Bar dataKey="sí" name="Reportados" stackId="a" fill="#E24B4A" radius={[0, 0, 0, 0]} barSize={60} className="cursor-pointer" activeBar={{ fill: '#A32D2D' }} />
+              <Bar dataKey="no" name="Sin Casos" stackId="a" fill="#1D9E75" radius={[15, 15, 0, 0]} barSize={60} className="cursor-pointer" activeBar={{ fill: '#0F6E56', radius: [15, 15, 0, 0] }} />
             </BarChart>
           </ResponsiveContainer>
         </div>
