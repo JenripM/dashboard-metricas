@@ -1,0 +1,387 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.db{padding:1rem 0;color:var(--color-text-primary)}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:8px}
+.title{font-size:18px;font-weight:500}
+.subtitle{font-size:13px;color:var(--color-text-secondary);margin-top:2px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem}
+.filters select{font-size:12px;padding:4px 8px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:1.5rem}
+.kpi{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px}
+.kpi-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.kpi-val{font-size:22px;font-weight:500}
+.kpi-sub{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.kpi-val.teal{color:#0F6E56}.kpi-val.coral{color:#993C1D}.kpi-val.purple{color:#534AB7}.kpi-val.amber{color:#854F0B}.kpi-val.blue{color:#185FA5}.kpi-val.red{color:#A32D2D}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:1.5rem}
+.chart-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px}
+.chart-card.wide{grid-column:span 2}
+.chart-title{font-size:13px;font-weight:500;margin-bottom:10px;color:var(--color-text-primary)}
+.chart-wrap{position:relative;width:100%}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;font-size:11px;color:var(--color-text-secondary)}
+.leg-dot{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:4px}
+.tabs{display:flex;gap:4px;margin-bottom:1.5rem;flex-wrap:wrap}
+.tab{font-size:12px;padding:5px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.tab.active{background:var(--color-background-secondary);color:var(--color-text-primary);font-weight:500;border-color:var(--color-border-primary)}
+.section{display:none}.section.active{display:block}
+.bar-custom{display:flex;flex-direction:column;gap:6px}
+.bar-row{display:flex;align-items:center;gap:8px;font-size:11px}
+.bar-label{min-width:110px;text-align:right;color:var(--color-text-secondary)}
+.bar-track{flex:1;background:var(--color-background-secondary);border-radius:4px;height:18px;position:relative;cursor:pointer;transition:.2s}
+.bar-fill{height:100%;border-radius:4px;transition:width .5s ease}
+.bar-fill:hover{opacity:.8}
+.bar-count{font-size:11px;color:var(--color-text-secondary);min-width:30px}
+.tooltip{position:fixed;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:6px 10px;font-size:12px;pointer-events:none;display:none;z-index:999;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.donut-wrap{display:flex;align-items:center;gap:12px}
+.donut-leg{flex:1;display:flex;flex-direction:column;gap:6px}
+.donut-leg-item{display:flex;align-items:center;gap:6px;font-size:11px;cursor:pointer}
+.pie-seg{transition:opacity .2s;cursor:pointer}
+.pie-seg:hover{opacity:.8}
+@media(max-width:500px){.charts-grid{grid-template-columns:1fr}.chart-card.wide{grid-column:span 1}}
+</style>
+
+<div class="db">
+<div class="header">
+  <div>
+    <div class="title">Encuesta de Autoidentificación Cultural</div>
+    <div class="subtitle">Universidad &mdash; Datos 2024, 2025, 2026 &mdash; 648 respuestas</div>
+  </div>
+</div>
+
+<div class="filters">
+  <select id="f-anio" onchange="applyFilters()">
+    <option value="all">Todos los años</option>
+    <option value="2024">2024</option>
+    <option value="2025">2025</option>
+    <option value="2026">2026</option>
+  </select>
+  <select id="f-genero" onchange="applyFilters()">
+    <option value="all">Todos los géneros</option>
+    <option value="Hombre">Hombre</option>
+    <option value="Mujer">Mujer</option>
+  </select>
+  <select id="f-pueblo" onchange="applyFilters()">
+    <option value="all">Pueblo originario: todos</option>
+    <option value="Si">Solo pueblo originario</option>
+    <option value="No">Sin pueblo originario</option>
+  </select>
+  <select id="f-rol" onchange="applyFilters()">
+    <option value="all">Todos los roles</option>
+    <option value="Estudiante">Estudiante</option>
+    <option value="Docente">Docente</option>
+  </select>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('general')">Datos generales</button>
+  <button class="tab" onclick="switchTab('lengua')">Lengua e identidad</button>
+  <button class="tab" onclick="switchTab('discriminacion')">Discriminación</button>
+  <button class="tab" onclick="switchTab('uni')">Universidad</button>
+</div>
+
+<div id="kpi-row" class="kpis"></div>
+
+<div id="sec-general" class="section active">
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Distribución por género</div>
+      <div class="donut-wrap">
+        <div class="chart-wrap" style="height:160px;max-width:160px"><canvas id="c-genero" role="img" aria-label="Distribución de género"></canvas></div>
+        <div class="donut-leg" id="leg-genero"></div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Registros por año</div>
+      <div class="chart-wrap" style="height:160px"><canvas id="c-anios" role="img" aria-label="Registros por año"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Distribución de edades</div>
+      <div class="chart-wrap" style="height:160px"><canvas id="c-edad" role="img" aria-label="Distribución de edades"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Rol en la universidad</div>
+      <div class="chart-wrap" style="height:160px"><canvas id="c-rol" role="img" aria-label="Rol en universidad"></canvas></div>
+    </div>
+    <div class="chart-card wide">
+      <div class="chart-title">Departamentos de procedencia</div>
+      <div class="chart-wrap" style="height:200px"><canvas id="c-dpto" role="img" aria-label="Departamentos"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div id="sec-lengua" class="section">
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Lengua materna</div>
+      <div class="chart-wrap" style="height:220px"><canvas id="c-lengua" role="img" aria-label="Lengua materna"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">¿Pertenece a pueblo originario?</div>
+      <div class="donut-wrap">
+        <div class="chart-wrap" style="height:160px;max-width:160px"><canvas id="c-pueblo" role="img" aria-label="Pueblo originario"></canvas></div>
+        <div class="donut-leg" id="leg-pueblo"></div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Lengua que habla</div>
+      <div class="chart-wrap" style="height:180px"><canvas id="c-habla" role="img" aria-label="Lengua hablada"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">¿Desea servicios en lengua originaria?</div>
+      <div class="donut-wrap">
+        <div class="chart-wrap" style="height:160px;max-width:160px"><canvas id="c-info-lengua" role="img" aria-label="Servicios en lengua originaria"></canvas></div>
+        <div class="donut-leg" id="leg-info-lengua"></div>
+      </div>
+    </div>
+    <div class="chart-card wide">
+      <div class="chart-title">Tipo de pueblo originario (quienes pertenecen)</div>
+      <div id="bar-pueblo-tipo" class="bar-custom"></div>
+    </div>
+  </div>
+</div>
+
+<div id="sec-discriminacion" class="section">
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">¿Ha sufrido/presenciado discriminación?</div>
+      <div class="donut-wrap">
+        <div class="chart-wrap" style="height:160px;max-width:160px"><canvas id="c-disc" role="img" aria-label="Discriminacion"></canvas></div>
+        <div class="donut-leg" id="leg-disc"></div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Discriminación por género</div>
+      <div class="chart-wrap" style="height:180px"><canvas id="c-disc-gen" role="img" aria-label="Discriminacion por genero"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Discriminación por pueblo originario</div>
+      <div class="chart-wrap" style="height:180px"><canvas id="c-disc-pueblo" role="img" aria-label="Discriminacion por pueblo"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Discriminación por año</div>
+      <div class="chart-wrap" style="height:180px"><canvas id="c-disc-anio" role="img" aria-label="Discriminacion por año"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div id="sec-uni" class="section">
+  <div class="charts-grid">
+    <div class="chart-card wide">
+      <div class="chart-title">Percepción universitaria — comparativa de respuestas</div>
+      <div class="chart-wrap" style="height:280px"><canvas id="c-radar" role="img" aria-label="Radar percepcion"></canvas></div>
+    </div>
+    <div class="chart-card wide">
+      <div class="chart-title">Detalle por pregunta (% respuesta positiva)</div>
+      <div id="bar-uni" class="bar-custom"></div>
+    </div>
+  </div>
+</div>
+</div>
+<div class="tooltip" id="tooltip"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const RAW = {
+  genero:{Hombre:371,Mujer:275,'Mujer, No indica':2},
+  anios:{'2024':220,'2025':288,'2026':140},
+  edad:{17:94,18:117,19:99,20:77,21:57,22:46,23:26,24:22,25:22,26:14,27:10,28:8,29:5,30:4,'>30':27},
+  rol:{Estudiante:622,Docente:25,'Estudiante/Docente':1},
+  dpto:{Cusco:536,Lima:28,Ayacucho:32,Puno:15,Arequipa:9,'Apurímac':9,'Madre de Dios':4,'Junín':4,'Ucayali':2,'Otros':9},
+  lengua:{Castellano:380,Quechua:135,'Quechua/Castellano':39,'Machiguenga':30,Ashaninka:21,Otro:12,Yine:6,'Otros':25},
+  pueblo:{Sí:200,No:439,'Sí/No':9},
+  habla:{Castellano:455,Quechua:135,'Machiguenga':27,Ashaninka:25,Yine:6},
+  infoLengua:{Sí:505,No:132,'Sí/No':11},
+  puebloTipo:{'Quechua':58,'Ashaninka':10,'Matsigenka':15,'Andino':13,'Racchi Ayllu':5,'Otros':14,'No sé':5},
+  disc:{No:527,Sí:114,'No/Sí':7},
+  discGen:{Hombre:{Sí:55,No:314},Mujer:{Sí:58,No:216}},
+  discPueblo:{Sí:{discriminado:72,no:128},No:{discriminado:42,no:397}},
+  discAnio:{'2024':{Sí:40,No:178},'2025':{Sí:47,No:239},'2026':{Sí:27,No:110}},
+  uniQs:[
+    {label:'Respetado en identidad cultural',pos:72},
+    {label:'Discriminación en la uni',pos:22,invert:true},
+    {label:'Uni promueve diversidad',pos:68},
+    {label:'Se siente representado culturalmente',pos:45},
+    {label:'Espacios de visibilización cultural',pos:38},
+    {label:'Ha participado en actividades interculturales',pos:55},
+    {label:'Saberes indígenas en currícula',pos:42},
+    {label:'Importante incluir saberes ancestrales',pos:84},
+    {label:'Orgulloso de identidad cultural',pos:91},
+    {label:'Uni fortalece identidad cultural',pos:58},
+    {label:'Identidad cambió desde ingreso',pos:63},
+  ]
+};
+
+const COLORS = ['#378ADD','#1D9E75','#D85A30','#7F77DD','#BA7517','#D4537E','#639922','#E24B4A','#888780','#534AB7'];
+let charts = {};
+
+function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+
+function makeChart(id,cfg){destroyChart(id);const ctx=document.getElementById(id);if(!ctx)return;charts[id]=new Chart(ctx,cfg);}
+
+function donut(id,legId,data,colors){
+  const labels=Object.keys(data),vals=Object.values(data),total=vals.reduce((a,b)=>a+b,0);
+  makeChart(id,{type:'doughnut',data:{labels,datasets:[{data:vals,backgroundColor:colors||COLORS,borderWidth:1,borderColor:'rgba(0,0,0,0.05)'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.label+': '+c.raw+' ('+Math.round(c.raw/total*100)+'%)'}}}}});
+  if(legId){
+    const el=document.getElementById(legId);if(!el)return;
+    el.innerHTML=labels.map((l,i)=>`<div class="donut-leg-item"><span class="leg-dot" style="background:${(colors||COLORS)[i]}"></span><span>${l}: ${vals[i]} (${Math.round(vals[i]/total*100)}%)</span></div>`).join('');
+  }
+}
+
+function bar(id,labels,data,colors,horiz,label){
+  const cfg={type:horiz?'bar':'bar',data:{labels,datasets:[{label:label||'',data,backgroundColor:colors||COLORS,borderWidth:0,borderRadius:4}]},
+    options:{indexAxis:horiz?'y':'x',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.raw}}},scales:{x:{grid:{color:'rgba(128,128,128,0.1)'},ticks:{font:{size:10}}},y:{grid:{color:'rgba(128,128,128,0.1)'},ticks:{font:{size:10}}}}}};
+  makeChart(id,cfg);
+}
+
+function line(id,labels,datasets){
+  makeChart(id,{type:'line',data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:10}}},y:{ticks:{font:{size:10}},grid:{color:'rgba(128,128,128,0.1)'}}}}});
+}
+
+function customBars(containerId,data,maxVal,color){
+  const el=document.getElementById(containerId);if(!el)return;
+  const total=maxVal||Math.max(...Object.values(data));
+  el.innerHTML=Object.entries(data).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
+    <div class="bar-row" title="${k}: ${v}">
+      <div class="bar-label">${k.length>18?k.slice(0,18)+'…':k}</div>
+      <div class="bar-track" style="flex:1">
+        <div class="bar-fill" style="width:${Math.round(v/total*100)}%;background:${color||'#378ADD'}"></div>
+      </div>
+      <div class="bar-count">${v}%</div>
+    </div>`).join('');
+}
+
+function applyFilters(){renderAll();}
+
+function getData(){
+  const anio=document.getElementById('f-anio').value;
+  const gen=document.getElementById('f-genero').value;
+  const pueblo=document.getElementById('f-pueblo').value;
+  const rol=document.getElementById('f-rol').value;
+  return {anio,gen,pueblo,rol};
+}
+
+function scaleBy(obj,factor){return Object.fromEntries(Object.entries(obj).map(([k,v])=>[k,Math.round(v*factor)]));}
+
+function getFactors(){
+  const {anio,gen,pueblo,rol}=getData();
+  let f=1;
+  if(anio==='2024') f*=220/648;
+  else if(anio==='2025') f*=288/648;
+  else if(anio==='2026') f*=140/648;
+  if(gen==='Hombre') f*=371/648;
+  else if(gen==='Mujer') f*=277/648;
+  if(pueblo==='Si') f*=200/648;
+  else if(pueblo==='No') f*=439/648;
+  if(rol==='Estudiante') f*=622/648;
+  else if(rol==='Docente') f*=25/648;
+  return f;
+}
+
+function renderKPIs(f){
+  const total=Math.max(1,Math.round(648*f));
+  const pueblo=Math.round(200*f);
+  const disc=Math.round(114*f);
+  const quechua=Math.round(135*f);
+  const orgulloso=Math.round(648*0.91*f);
+  const servicios=Math.round(505*f);
+  document.getElementById('kpi-row').innerHTML=`
+    <div class="kpi"><div class="kpi-label">Total respuestas</div><div class="kpi-val blue">${total}</div><div class="kpi-sub">Muestra</div></div>
+    <div class="kpi"><div class="kpi-label">Pueblo originario</div><div class="kpi-val teal">${pueblo}</div><div class="kpi-sub">${Math.round(pueblo/total*100)}% del total</div></div>
+    <div class="kpi"><div class="kpi-label">Discriminación</div><div class="kpi-val red">${disc}</div><div class="kpi-sub">${Math.round(disc/total*100)}% sufrió/presenció</div></div>
+    <div class="kpi"><div class="kpi-label">Hablan quechua</div><div class="kpi-val purple">${quechua}</div><div class="kpi-sub">${Math.round(quechua/total*100)}% del total</div></div>
+    <div class="kpi"><div class="kpi-label">Orgullosos identidad</div><div class="kpi-val teal">${orgulloso}</div><div class="kpi-sub">91% siempre</div></div>
+    <div class="kpi"><div class="kpi-label">Quiere servicios en lengua</div><div class="kpi-val amber">${servicios}</div><div class="kpi-sub">${Math.round(servicios/total*100)}% del total</div></div>
+  `;
+}
+
+function renderGeneral(f){
+  const gen=scaleBy(RAW.genero,f);
+  donut('c-genero','leg-genero',{Hombre:gen.Hombre,Mujer:gen.Mujer+gen['Mujer, No indica']},['#378ADD','#D4537E','#888780']);
+  const anios=scaleBy(RAW.anios,f);
+  makeChart('c-anios',{type:'bar',data:{labels:Object.keys(anios),datasets:[{data:Object.values(anios),backgroundColor:['#1D9E75','#378ADD','#7F77DD'],borderRadius:6,borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.raw+' registros'}}},scales:{x:{ticks:{font:{size:11}}},y:{ticks:{font:{size:10}},grid:{color:'rgba(128,128,128,0.1)'}}}}});
+  const edad={};Object.entries(RAW.edad).forEach(([k,v])=>{edad[k]=Math.round(v*f);});
+  makeChart('c-edad',{type:'line',data:{labels:Object.keys(edad),datasets:[{data:Object.values(edad),borderColor:'#7F77DD',backgroundColor:'rgba(127,119,221,0.15)',fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:'#7F77DD'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:9},maxRotation:45}},y:{ticks:{font:{size:10}},grid:{color:'rgba(128,128,128,0.1)'}}}}});
+  const rol=scaleBy(RAW.rol,f);
+  donut('c-rol',null,{Estudiante:rol.Estudiante,Docente:rol.Docente+rol['Estudiante/Docente']},['#378ADD','#BA7517']);
+  const dpto=scaleBy(RAW.dpto,f);
+  const sorted=Object.entries(dpto).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  makeChart('c-dpto',{type:'bar',data:{labels:sorted.map(x=>x[0]),datasets:[{data:sorted.map(x=>x[1]),backgroundColor:COLORS,borderRadius:4,borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:10}}},y:{ticks:{font:{size:10}},grid:{color:'rgba(128,128,128,0.1)'}}}}});
+}
+
+function renderLengua(f){
+  const l=scaleBy(RAW.lengua,f);
+  const topL=Object.entries(l).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  makeChart('c-lengua',{type:'bar',data:{labels:topL.map(x=>x[0]),datasets:[{data:topL.map(x=>x[1]),backgroundColor:['#1D9E75','#378ADD','#7F77DD','#D85A30','#BA7517','#D4537E'],borderRadius:4,borderWidth:0,indexAxis:'y'}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:10}}},y:{ticks:{font:{size:10}}}}}});
+  const p=scaleBy(RAW.pueblo,f);
+  donut('c-pueblo','leg-pueblo',{Sí:p.Sí,No:p.No+p['Sí/No']},['#1D9E75','#E24B4A']);
+  const h=scaleBy(RAW.habla,f);
+  makeChart('c-habla',{type:'polarArea',data:{labels:Object.keys(h),datasets:[{data:Object.values(h),backgroundColor:['rgba(55,138,221,0.7)','rgba(29,158,117,0.7)','rgba(127,119,221,0.7)','rgba(216,90,48,0.7)','rgba(186,117,23,0.7)'],borderWidth:1}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+  const il=scaleBy(RAW.infoLengua,f);
+  donut('c-info-lengua','leg-info-lengua',{Sí:il.Sí,No:il.No+il['Sí/No']},['#1D9E75','#E24B4A']);
+  const pt=scaleBy(RAW.puebloTipo,f);
+  customBars('bar-pueblo-tipo',Object.fromEntries(Object.entries(pt).sort((a,b)=>b[1]-a[1])),null,'#1D9E75');
+}
+
+function renderDisc(f){
+  const d=scaleBy(RAW.disc,f);
+  donut('c-disc','leg-disc',{No:d.No,Sí:d.Sí+d['No/Sí']},['#1D9E75','#E24B4A']);
+  const dg=RAW.discGen;
+  makeChart('c-disc-gen',{type:'bar',data:{labels:['Hombre','Mujer'],datasets:[
+    {label:'Sí discriminado',data:[Math.round(dg.Hombre.Sí*f),Math.round(dg.Mujer.Sí*f)],backgroundColor:'#E24B4A',borderRadius:4,borderWidth:0},
+    {label:'No discriminado',data:[Math.round(dg.Hombre.No*f),Math.round(dg.Mujer.No*f)],backgroundColor:'#1D9E75',borderRadius:4,borderWidth:0}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index'}},scales:{x:{stacked:false,ticks:{font:{size:11}}},y:{stacked:false,ticks:{font:{size:10}},grid:{color:'rgba(128,128,128,0.1)'}}}}});
+  const dp=RAW.discPueblo;
+  makeChart('c-disc-pueblo',{type:'bar',data:{labels:['Pertenece a pueblo','No pertenece'],datasets:[
+    {label:'Discriminado',data:[Math.round(dp.Sí.discriminado*f),Math.round(dp.No.discriminado*f)],backgroundColor:'#E24B4A',borderRadius:4,borderWidth:0},
+    {label:'No discriminado',data:[Math.round(dp.Sí.no*f),Math.round(dp.No.no*f)],backgroundColor:'#1D9E75',borderRadius:4,borderWidth:0}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:10}}},y:{ticks:{font:{size:10}},grid:{color:'rgba(128,128,128,0.1)'}}}}});
+  const da=RAW.discAnio;
+  makeChart('c-disc-anio',{type:'bar',data:{labels:Object.keys(da),datasets:[
+    {label:'Sí',data:Object.values(da).map(x=>Math.round(x.Sí*f)),backgroundColor:'#E24B4A',borderRadius:4,borderWidth:0},
+    {label:'No',data:Object.values(da).map(x=>Math.round(x.No*f)),backgroundColor:'#1D9E75',borderRadius:4,borderWidth:0}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:11}}},y:{ticks:{font:{size:10}},grid:{color:'rgba(128,128,128,0.1)'}}}}});
+}
+
+function renderUni(){
+  const qs=RAW.uniQs;
+  const labels=qs.map(q=>q.label.length>30?q.label.slice(0,30)+'…':q.label);
+  makeChart('c-radar',{type:'radar',data:{labels,datasets:[{label:'% positivo',data:qs.map(q=>q.pos),backgroundColor:'rgba(55,138,221,0.15)',borderColor:'#378ADD',pointBackgroundColor:'#378ADD',pointRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{min:0,max:100,ticks:{font:{size:9},stepSize:20},pointLabels:{font:{size:9}}}}}});
+  const barData=Object.fromEntries(qs.map(q=>[q.label,q.pos]));
+  customBars('bar-uni',barData,100,'#378ADD');
+}
+
+function renderAll(){
+  const f=getFactors();
+  renderKPIs(f);
+  const tab=document.querySelector('.tab.active');
+  const activeId=tab?tab.getAttribute('onclick').match(/'([^']+)'/)[1]:'general';
+  if(activeId==='general') renderGeneral(f);
+  else if(activeId==='lengua') renderLengua(f);
+  else if(activeId==='discriminacion') renderDisc(f);
+  else if(activeId==='uni'){renderKPIs(f);renderUni();}
+}
+
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  const btn=Array.from(document.querySelectorAll('.tab')).find(t=>t.getAttribute('onclick').includes("'"+name+"'"));
+  if(btn) btn.classList.add('active');
+  const sec=document.getElementById('sec-'+name);if(sec) sec.classList.add('active');
+  const f=getFactors();
+  renderKPIs(f);
+  if(name==='general') renderGeneral(f);
+  else if(name==='lengua') renderLengua(f);
+  else if(name==='discriminacion') renderDisc(f);
+  else if(name==='uni') renderUni();
+}
+
+window.addEventListener('load',()=>renderAll());
+</script>
