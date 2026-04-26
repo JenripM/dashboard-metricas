@@ -51,7 +51,19 @@ import {
 
 type TabType = 'general' | 'lengua' | 'discriminacion' | 'uni';
 
-const COLORS = ['#378ADD', '#1D9E75', '#D85A30', '#7F77DD', '#BA7517', '#D4537E', '#639922', '#E24B4A', '#888780', '#534AB7'];
+// Vibrant, high-contrast palette
+const COLORS = [
+  '#4F46E5', // Indigo Electric
+  '#10B981', // Emerald Bright
+  '#F43F5E', // Rose Vibrant
+  '#8B5CF6', // Violet Deep
+  '#F59E0B', // Amber Glow
+  '#06B6D4', // Cyan Neon
+  '#EC4899', // Pink Punch
+  '#84CC16', // Lime Zest
+  '#6366F1', // Indigo Soft
+  '#14B8A6'  // Teal Modern
+];
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -65,7 +77,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
           </span>
         </div>
         <div className="h-1 w-full bg-slate-100 rounded-full overflow-hidden">
-          <div className="h-full bg-primary" style={{ width: '100%' }} />
+          <div className="h-full bg-indigo-500" style={{ width: '100%' }} />
         </div>
       </div>
     );
@@ -158,12 +170,12 @@ export default function Dashboard() {
     <div className="min-h-screen bg-slate-50 flex overflow-hidden">
       <aside className="hidden lg:flex flex-col w-72 bg-white border-r border-slate-200 h-screen sticky top-0 p-8 shadow-sm">
         <div className="flex items-center gap-4 mb-12">
-          <div className="h-12 w-12 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-emerald-200">
+          <div className="h-12 w-12 bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200">
             <LayoutDashboard size={24} />
           </div>
           <div>
             <h2 className="text-xl font-bold font-outfit text-slate-900 leading-tight">EduEtnica</h2>
-            <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Premium Analytics</p>
+            <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Premium Analytics</p>
           </div>
         </div>
 
@@ -176,8 +188,8 @@ export default function Dashboard() {
 
         <div className="mt-auto">
           <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-6 rounded-3xl text-white shadow-xl group cursor-pointer overflow-hidden relative">
-            <div className="absolute -right-4 -top-4 bg-emerald-500/20 h-24 w-24 rounded-full blur-2xl group-hover:bg-emerald-500/40 transition-all duration-500" />
-            <p className="text-xs font-bold text-emerald-400 mb-2 uppercase tracking-wider">Multianual 2024-26</p>
+            <div className="absolute -right-4 -top-4 bg-indigo-500/20 h-24 w-24 rounded-full blur-2xl group-hover:bg-indigo-500/40 transition-all duration-500" />
+            <p className="text-xs font-bold text-indigo-400 mb-2 uppercase tracking-wider">Multianual 2024-26</p>
             <p className="text-sm font-medium text-slate-300 mb-4 leading-relaxed relative z-10">Consolidado interactivo.</p>
             <button className="w-full bg-white/10 hover:bg-white/20 py-2 rounded-xl text-xs font-bold transition-all border border-white/10 flex items-center justify-center gap-2 relative z-10">
               <Download size={14} /> Exportar
@@ -192,12 +204,12 @@ export default function Dashboard() {
             <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
               <h1 className="text-2xl md:text-4xl font-black font-outfit text-slate-900 tracking-tight leading-none">Análisis Étnico</h1>
               <div className="flex items-center gap-2 mt-2">
-                <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter">Live Data</span>
+                <span className="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter">Live Data</span>
                 <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">{stats.total} Respuestas</p>
               </div>
             </motion.div>
             
-            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setShowModal(true)} className="btn-primary group h-14 px-8">
+            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setShowModal(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-3 h-14 px-8 rounded-2xl font-bold shadow-xl shadow-indigo-200 transition-all group">
               <Share2 size={18} className="group-hover:rotate-12 transition-transform" />
               <span>Publicar Reporte</span>
             </motion.button>
@@ -207,7 +219,7 @@ export default function Dashboard() {
         <main className="flex-1 p-6 md:p-10 max-w-7xl mx-auto w-full space-y-10">
           <section className="bg-white p-3 rounded-[2.5rem] border border-slate-200 shadow-xl shadow-slate-200/40 flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-3 px-5 py-2.5 bg-slate-900 rounded-full text-white">
-              <Filter size={16} className="text-emerald-400" />
+              <Filter size={16} className="text-indigo-400" />
               <span className="text-[10px] font-black uppercase tracking-widest">Filtros Inteligentes</span>
             </div>
             
@@ -257,7 +269,7 @@ export default function Dashboard() {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowModal(false)} className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" />
             <motion.div initial={{ y: 50, scale: 0.9, opacity: 0 }} animate={{ y: 0, scale: 1, opacity: 1 }} exit={{ y: 50, scale: 0.9, opacity: 0 }} className="relative bg-white rounded-[3rem] p-12 max-w-xl w-full shadow-2xl border border-slate-100">
               <div className="flex justify-between items-start mb-10">
-                <div className="h-16 w-16 bg-emerald-100 rounded-3xl flex items-center justify-center text-emerald-600 shadow-lg shadow-emerald-100">
+                <div className="h-16 w-16 bg-indigo-100 rounded-3xl flex items-center justify-center text-indigo-600 shadow-lg shadow-indigo-100">
                   <Share2 size={32} />
                 </div>
                 <button onClick={() => setShowModal(false)} className="h-10 w-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-200 transition-colors">
@@ -268,10 +280,10 @@ export default function Dashboard() {
               <p className="text-slate-500 mb-10 leading-relaxed">Comparte el estado actual de los filtros con colegas o autoridades universitarias.</p>
               <div className="bg-slate-50 border-2 border-slate-200 p-6 rounded-3xl mb-10 flex items-center justify-between gap-4">
                 <code className="text-sm font-bold text-slate-800 truncate">https://etnica.univ.edu/v3?f={factor.toFixed(2)}</code>
-                <button className="text-emerald-600 font-black text-xs uppercase tracking-widest hover:bg-emerald-50 px-4 py-2 rounded-xl transition-all">Copiar</button>
+                <button className="text-indigo-600 font-black text-xs uppercase tracking-widest hover:bg-indigo-50 px-4 py-2 rounded-xl transition-all">Copiar</button>
               </div>
               <div className="flex gap-4">
-                <button className="flex-1 bg-primary text-white font-black py-5 rounded-2xl shadow-xl shadow-primary/30 active:scale-95 transition-all">Generar PDF</button>
+                <button className="flex-1 bg-indigo-600 text-white font-black py-5 rounded-2xl shadow-xl shadow-indigo-300 active:scale-95 transition-all">Generar PDF</button>
               </div>
             </motion.div>
           </div>
@@ -283,7 +295,7 @@ export default function Dashboard() {
 
 function FilterSelect({ label, value, onChange, options }: { label: string, value: string, onChange: (v: string) => void, options: string[] }) {
   return (
-    <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-4 py-2 rounded-full hover:border-primary transition-all">
+    <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-4 py-2 rounded-full hover:border-indigo-400 transition-all">
       <span className="text-[10px] font-black text-slate-400 uppercase">{label}</span>
       <select value={value} onChange={(e) => onChange(e.target.value)} className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer">
         {options.map(opt => <option key={opt} value={opt}>{opt === 'all' ? 'Todos' : opt}</option>)}
@@ -294,7 +306,7 @@ function FilterSelect({ label, value, onChange, options }: { label: string, valu
 
 function NavItem({ icon, label, active, onClick }: { icon: React.ReactNode, label: string, active: boolean, onClick: () => void }) {
   return (
-    <button onClick={onClick} className={`w-full flex items-center justify-between p-5 rounded-[1.5rem] transition-all group ${active ? 'bg-emerald-600 text-white shadow-xl shadow-emerald-200' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-700'}`}>
+    <button onClick={onClick} className={`w-full flex items-center justify-between p-5 rounded-[1.5rem] transition-all group ${active ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-200' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-700'}`}>
       <div className="flex items-center gap-5">
         <div className={`transition-transform duration-300 ${active ? 'scale-110' : 'group-hover:scale-110'}`}>{icon}</div>
         <span className={`text-sm font-black tracking-tight ${active ? 'opacity-100' : 'opacity-70'}`}>{label}</span>
@@ -305,8 +317,8 @@ function NavItem({ icon, label, active, onClick }: { icon: React.ReactNode, labe
 }
 
 function KPICard({ icon, label, value, sub, color, alert, delay }: { icon: React.ReactNode, label: string, value: string | number, sub: string, color: string, alert?: boolean, delay: number }) {
-  const colorMap: Record<string, string> = { blue: 'bg-blue-600', emerald: 'bg-emerald-600', red: 'bg-red-600', purple: 'bg-purple-600', amber: 'bg-amber-600' };
-  const textMap: Record<string, string> = { blue: 'text-blue-600', emerald: 'text-emerald-600', red: 'text-red-600', purple: 'text-purple-600', amber: 'text-amber-600' };
+  const colorMap: Record<string, string> = { blue: 'bg-indigo-600', emerald: 'bg-emerald-500', red: 'bg-rose-500', purple: 'bg-violet-600', amber: 'bg-amber-500' };
+  const textMap: Record<string, string> = { blue: 'text-indigo-600', emerald: 'text-emerald-500', red: 'text-rose-500', purple: 'text-violet-600', amber: 'text-amber-500' };
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay }} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group overflow-hidden relative">
@@ -343,7 +355,7 @@ function GeneralTab({ factor, setGenero, setAnio, getFactorExcluding, activeFilt
           <div>
             <h3 className="text-xl font-black text-slate-900 font-outfit">Distribución Género</h3>
             <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1 flex items-center gap-2">
-              <MousePointer2 size={12} className="text-emerald-500" /> Clic para filtrar
+              <MousePointer2 size={12} className="text-indigo-500" /> Clic para filtrar
             </p>
           </div>
           {activeFilters.genero !== 'all' && (
@@ -387,10 +399,10 @@ function GeneralTab({ factor, setGenero, setAnio, getFactorExcluding, activeFilt
               <CartesianGrid strokeDasharray="5 5" vertical={false} stroke="#f1f5f9" />
               <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fontWeight: 700, fill: '#64748b' }} />
               <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(55,138,221,0.05)', radius: 10 }} />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(79,70,229,0.05)', radius: 10 }} />
               <Bar 
-                dataKey="value" fill="#378ADD" radius={[12, 12, 4, 4]} barSize={50} className="cursor-pointer focus:outline-none" 
-                activeBar={{ fill: '#1D9E75', radius: [12, 12, 4, 4] }}
+                dataKey="value" fill="#4F46E5" radius={[12, 12, 4, 4]} barSize={50} className="cursor-pointer focus:outline-none" 
+                activeBar={{ fill: '#818CF8' }}
               />
             </BarChart>
           </ResponsiveContainer>
@@ -399,7 +411,7 @@ function GeneralTab({ factor, setGenero, setAnio, getFactorExcluding, activeFilt
 
       <div className="lg:col-span-12 card-premium">
         <div className="flex items-center gap-3 mb-8">
-          <div className="h-10 w-10 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-600 shadow-sm"><Users size={20} /></div>
+          <div className="h-10 w-10 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600 shadow-sm"><Users size={20} /></div>
           <h3 className="text-xl font-black text-slate-900 font-outfit">Curva Demográfica (Edad)</h3>
         </div>
         <div className="h-72">
@@ -407,15 +419,15 @@ function GeneralTab({ factor, setGenero, setAnio, getFactorExcluding, activeFilt
             <AreaChart data={Object.entries(RAW_DATA.edad).map(([name, value]) => ({ name, value: Math.round(value * factor) }))}>
               <defs>
                 <linearGradient id="colorAge" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#7F77DD" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="#7F77DD" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#4F46E5" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#4F46E5" stopOpacity={0}/>
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
               <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fontWeight: 600 }} />
               <YAxis axisLine={false} tickLine={false} hide />
               <Tooltip content={<CustomTooltip />} />
-              <Area type="monotone" dataKey="value" stroke="#7F77DD" strokeWidth={4} fillOpacity={1} fill="url(#colorAge)" />
+              <Area type="monotone" dataKey="value" stroke="#4F46E5" strokeWidth={4} fillOpacity={1} fill="url(#colorAge)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -452,8 +464,8 @@ function LenguaTab({ factor, setPueblo, getFactorExcluding, activeFilters }: {
                 activeShape={renderActiveShape}
                 onClick={(data) => data && data.name && setPueblo(data.name)} className="cursor-pointer focus:outline-none"
               >
-                <Cell fill="#1D9E75" />
-                <Cell fill="#E24B4A" />
+                <Cell fill="#10B981" />
+                <Cell fill="#F43F5E" />
               </Pie>
               <Tooltip content={<CustomTooltip />} />
               <Legend verticalAlign="bottom" />
@@ -471,11 +483,11 @@ function LenguaTab({ factor, setPueblo, getFactorExcluding, activeFilters }: {
             return (
               <motion.div key={name} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: idx * 0.05 }} className="group">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-black text-slate-500 uppercase tracking-widest group-hover:text-emerald-600 transition-colors">{name}</span>
+                  <span className="text-xs font-black text-slate-500 uppercase tracking-widest group-hover:text-indigo-600 transition-colors">{name}</span>
                   <span className="text-sm font-black text-slate-900 font-outfit">{v}</span>
                 </div>
                 <div className="h-3 bg-slate-50 rounded-full overflow-hidden border border-slate-100 p-0.5">
-                  <motion.div initial={{ width: 0 }} animate={{ width: `${(v / total) * 100}%` }} transition={{ duration: 1, ease: "easeOut" }} className="h-full bg-emerald-500 rounded-full shadow-lg shadow-emerald-100" />
+                  <motion.div initial={{ width: 0 }} animate={{ width: `${(v / total) * 100}%` }} transition={{ duration: 1, ease: "easeOut" }} className="h-full bg-emerald-400 rounded-full shadow-lg shadow-emerald-100" />
                 </div>
               </motion.div>
             );
@@ -514,10 +526,10 @@ function DiscriminacionTab({ factor, setAnio, getFactorExcluding, activeFilters 
               <CartesianGrid strokeDasharray="5 5" vertical={false} stroke="#f1f5f9" />
               <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 14, fontWeight: 800 }} />
               <YAxis axisLine={false} tickLine={false} />
-              <Tooltip cursor={{ fill: 'rgba(226,75,74,0.02)', radius: 15 }} />
+              <Tooltip cursor={{ fill: 'rgba(244,63,94,0.02)', radius: 15 }} />
               <Legend verticalAlign="top" align="right" iconType="rect" wrapperStyle={{ paddingBottom: 20 }} />
-              <Bar dataKey="sí" name="Reportados" stackId="a" fill="#E24B4A" radius={[0, 0, 0, 0]} barSize={60} className="cursor-pointer" activeBar={{ fill: '#A32D2D' }} />
-              <Bar dataKey="no" name="Sin Casos" stackId="a" fill="#1D9E75" radius={[15, 15, 0, 0]} barSize={60} className="cursor-pointer" activeBar={{ fill: '#0F6E56', radius: [15, 15, 0, 0] }} />
+              <Bar dataKey="sí" name="Reportados" stackId="a" fill="#F43F5E" radius={[0, 0, 0, 0]} barSize={60} className="cursor-pointer" activeBar={{ fill: '#FB7185' }} />
+              <Bar dataKey="no" name="Sin Casos" stackId="a" fill="#10B981" radius={[15, 15, 0, 0]} barSize={60} className="cursor-pointer" activeBar={{ fill: '#34D399' }} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -546,7 +558,7 @@ function UniTab({ factor }: { factor: number }) {
               <PolarGrid stroke="#e2e8f0" strokeWidth={2} />
               <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: '#64748b', fontWeight: 800 }} />
               <PolarRadiusAxis angle={30} domain={[0, 100]} axisLine={false} tick={false} />
-              <Radar name="Positivo" dataKey="A" stroke="#378ADD" strokeWidth={3} fill="#378ADD" fillOpacity={0.15} />
+              <Radar name="Positivo" dataKey="A" stroke="#4F46E5" strokeWidth={3} fill="#4F46E5" fillOpacity={0.15} />
               <Tooltip />
             </RadarChart>
           </ResponsiveContainer>
@@ -558,11 +570,11 @@ function UniTab({ factor }: { factor: number }) {
           <motion.div key={q.label} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: idx * 0.05 }} className="bg-white p-6 rounded-3xl border border-slate-100 flex flex-col gap-4 shadow-sm hover:shadow-lg transition-all group">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{idx + 1}. Métrica Intercultural</span>
-              <span className="text-lg font-black text-blue-600 font-outfit">{q.pos}%</span>
+              <span className="text-lg font-black text-indigo-600 font-outfit">{q.pos}%</span>
             </div>
-            <h4 className="text-sm font-bold text-slate-700 leading-tight group-hover:text-blue-600 transition-colors">{q.label}</h4>
+            <h4 className="text-sm font-bold text-slate-700 leading-tight group-hover:text-indigo-600 transition-colors">{q.label}</h4>
             <div className="h-2 w-full bg-slate-50 rounded-full overflow-hidden border border-slate-100">
-              <motion.div initial={{ width: 0 }} animate={{ width: `${q.pos}%` }} transition={{ duration: 1.5, ease: "easeOut" }} className="h-full bg-blue-500 rounded-full" />
+              <motion.div initial={{ width: 0 }} animate={{ width: `${q.pos}%` }} transition={{ duration: 1.5, ease: "easeOut" }} className="h-full bg-indigo-500 rounded-full" />
             </div>
           </motion.div>
         ))}

@@ -2,10 +2,10 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #1D9E75;
-  --color-primary-light: #5DCAA5;
-  --color-primary-dark: #0F6E56;
-  --color-secondary: #D85A30;
+  --color-primary: #4F46E5;
+  --color-primary-light: #818CF8;
+  --color-primary-dark: #3730A3;
+  --color-secondary: #F43F5E;
   
   --color-background: #f8fafc;
   --color-foreground: #0f172a;
@@ -16,12 +16,15 @@
   --radius-2xl: 1rem;
   --radius-3xl: 1.5rem;
   
-  --shadow-premium: 0 10px 30px -10px rgba(0, 0, 0, 0.1), 0 4px 10px -5px rgba(0, 0, 0, 0.04);
-  --shadow-premium-hover: 0 20px 40px -15px rgba(0, 0, 0, 0.15), 0 8px 15px -10px rgba(0, 0, 0, 0.06);
+  --shadow-premium: 0 10px 30px -10px rgba(79, 70, 229, 0.1), 0 4px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-premium-hover: 0 20px 40px -15px rgba(79, 70, 229, 0.15), 0 8px 15px -10px rgba(0, 0, 0, 0.06);
 }
 
 body {
-  @apply bg-background text-foreground font-inter antialiased;
+  background: radial-gradient(circle at top right, #eef2ff, transparent 40%),
+              radial-gradient(circle at bottom left, #f0fdf4, transparent 40%),
+              #f8fafc;
+  @apply text-foreground font-inter antialiased min-h-screen;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -33,11 +36,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .card-premium {
-  @apply bg-white rounded-3xl p-6 shadow-premium border border-slate-100 transition-all duration-300 hover:shadow-premium-hover hover:-translate-y-1;
+  @apply bg-white/70 backdrop-blur-md rounded-[2.5rem] p-8 shadow-premium border border-slate-200/60 transition-all duration-500 hover:shadow-premium-hover hover:-translate-y-1 hover:border-indigo-200/50;
 }
 
 .btn-primary {
-  @apply bg-primary hover:bg-primary-dark text-white font-semibold py-2.5 px-6 rounded-xl transition-all duration-200 flex items-center gap-2 active:scale-95 shadow-lg shadow-primary/20;
+  @apply bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 px-8 rounded-2xl transition-all duration-300 flex items-center gap-3 active:scale-95 shadow-xl shadow-indigo-200;
 }
 
 .input-select {
@@ -70,4 +73,14 @@ h1, h2, h3, h4, h5, h6 {
 .recharts-curve:focus,
 .recharts-rectangle:focus {
   outline: none !important;
+}
+
+/* Animations */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+.animate-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
 }
