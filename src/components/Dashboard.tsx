@@ -53,7 +53,6 @@ type TabType = 'general' | 'lengua' | 'discriminacion' | 'uni';
 
 const COLORS = ['#378ADD', '#1D9E75', '#D85A30', '#7F77DD', '#BA7517', '#D4537E', '#639922', '#E24B4A', '#888780', '#534AB7'];
 
-// Custom Tooltip Component for a premium feel
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
@@ -74,7 +73,6 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-// Render active shape for Pie charts
 const renderActiveShape = (props: any) => {
   const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
   return (
@@ -110,7 +108,6 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<TabType>('general');
   const [showModal, setShowModal] = useState(false);
 
-  // Multipliers for each dimension
   const multipliers = useMemo(() => ({
     anio: anio === 'all' ? 1 : (anio === '2024' ? 220/648 : (anio === '2025' ? 288/648 : 140/648)),
     genero: genero === 'all' ? 1 : (genero === 'Hombre' ? 371/648 : 277/648),
@@ -118,12 +115,10 @@ export default function Dashboard() {
     rol: rol === 'all' ? 1 : (rol === 'Estudiante' ? 622/648 : 25/648)
   }), [anio, genero, pueblo, rol]);
 
-  // Total scaling factor (global)
   const factor = useMemo(() => {
     return multipliers.anio * multipliers.genero * multipliers.pueblo * multipliers.rol;
   }, [multipliers]);
 
-  // Factor excluding a specific dimension
   const getFactorExcluding = (dim: keyof typeof multipliers) => {
     let f = 1;
     Object.entries(multipliers).forEach(([key, val]) => {
@@ -132,7 +127,6 @@ export default function Dashboard() {
     return f;
   };
 
-  // Memoized stats based on factor
   const stats = useMemo(() => {
     const total = Math.max(1, Math.round(648 * factor));
     const puebloCount = Math.round(200 * factor);
@@ -162,7 +156,6 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex overflow-hidden">
-      {/* Sidebar - Desktop */}
       <aside className="hidden lg:flex flex-col w-72 bg-white border-r border-slate-200 h-screen sticky top-0 p-8 shadow-sm">
         <div className="flex items-center gap-4 mb-12">
           <div className="h-12 w-12 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-emerald-200">
@@ -193,7 +186,6 @@ export default function Dashboard() {
         </div>
       </aside>
 
-      {/* Main Content */}
       <div className="flex-1 flex flex-col h-screen overflow-y-auto bg-slate-50">
         <header className="sticky top-0 z-30 bg-slate-50/80 backdrop-blur-xl border-b border-slate-200/50 px-6 md:px-10 py-6">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -213,7 +205,6 @@ export default function Dashboard() {
         </header>
 
         <main className="flex-1 p-6 md:p-10 max-w-7xl mx-auto w-full space-y-10">
-          {/* Enhanced Filters Bar */}
           <section className="bg-white p-3 rounded-[2.5rem] border border-slate-200 shadow-xl shadow-slate-200/40 flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-3 px-5 py-2.5 bg-slate-900 rounded-full text-white">
               <Filter size={16} className="text-emerald-400" />
@@ -233,7 +224,6 @@ export default function Dashboard() {
             </button>
           </section>
 
-          {/* KPI Cards with Animations */}
           <section className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
             <KPICard icon={<Users size={20} />} label="Muestra" value={stats.total} sub="Total" color="blue" delay={0} />
             <KPICard icon={<Globe size={20} />} label="Origen" value={stats.pueblo} sub={`${stats.puebloPct}% Pueblo`} color="emerald" delay={0.1} />
@@ -243,7 +233,6 @@ export default function Dashboard() {
             <KPICard icon={<TrendingUp size={20} />} label="Impacto" value={stats.servicios} sub="Demanda" color="amber" delay={0.5} />
           </section>
 
-          {/* Tab Content Area */}
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
@@ -262,7 +251,6 @@ export default function Dashboard() {
         </main>
       </div>
 
-      {/* Modal - Publicar */}
       <AnimatePresence>
         {showModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
@@ -293,7 +281,6 @@ export default function Dashboard() {
   );
 }
 
-// Reusable Filter Select
 function FilterSelect({ label, value, onChange, options }: { label: string, value: string, onChange: (v: string) => void, options: string[] }) {
   return (
     <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-4 py-2 rounded-full hover:border-primary transition-all">
@@ -335,7 +322,6 @@ function KPICard({ icon, label, value, sub, color, alert, delay }: { icon: React
   );
 }
 
-// Tab Content Components with Enhanced Interactivity
 function GeneralTab({ factor, setGenero, setAnio, getFactorExcluding, activeFilters }: { 
   factor: number, setGenero: (v: string) => void, setAnio: (v: string) => void, getFactorExcluding: (d: any) => number, activeFilters: { anio: string, genero: string }
 }) {
@@ -349,8 +335,6 @@ function GeneralTab({ factor, setGenero, setAnio, getFactorExcluding, activeFilt
   const anioData = Object.entries(RAW_DATA.anios).map(([name, value]) => ({ 
     name, value: (activeFilters.anio === 'all' || activeFilters.anio === name) ? Math.round(value * fAnio) : 0, percent: Math.round(value/648*100)
   }));
-
-  const [activeIndex, setActiveIndex] = useState(-1);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -373,8 +357,8 @@ function GeneralTab({ factor, setGenero, setAnio, getFactorExcluding, activeFilt
             <PieChart>
               <Pie 
                 data={genData} cx="50%" cy="50%" innerRadius={70} outerRadius={90} paddingAngle={10} cornerRadius={10} dataKey="value" stroke="none"
-                activeShape={renderActiveShape} activeIndex={activeIndex} onMouseEnter={(_, i) => setActiveIndex(i)} onMouseLeave={() => setActiveIndex(-1)}
-                onClick={(data) => setGenero(data.name)} className="cursor-pointer focus:outline-none"
+                activeShape={renderActiveShape}
+                onClick={(data) => data && data.name && setGenero(data.name)} className="cursor-pointer focus:outline-none"
               >
                 {genData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
               </Pie>
@@ -449,8 +433,6 @@ function LenguaTab({ factor, setPueblo, getFactorExcluding, activeFilters }: {
     { name: 'No', value: (activeFilters.pueblo === 'all' || activeFilters.pueblo === 'No') ? Math.round((RAW_DATA.pueblo.No + RAW_DATA.pueblo['Sí/No']) * fPueblo) : 0, percent: Math.round(448/648*100) }
   ];
 
-  const [activeIndex, setActiveIndex] = useState(-1);
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
       <div className="lg:col-span-5 card-premium">
@@ -467,8 +449,8 @@ function LenguaTab({ factor, setPueblo, getFactorExcluding, activeFilters }: {
             <PieChart>
               <Pie 
                 data={puebloData} cx="50%" cy="50%" innerRadius={70} outerRadius={90} cornerRadius={10} dataKey="value" stroke="none"
-                activeShape={renderActiveShape} activeIndex={activeIndex} onMouseEnter={(_, i) => setActiveIndex(i)} onMouseLeave={() => setActiveIndex(-1)}
-                onClick={(data) => setPueblo(data.name)} className="cursor-pointer focus:outline-none"
+                activeShape={renderActiveShape}
+                onClick={(data) => data && data.name && setPueblo(data.name)} className="cursor-pointer focus:outline-none"
               >
                 <Cell fill="#1D9E75" />
                 <Cell fill="#E24B4A" />
@@ -485,7 +467,7 @@ function LenguaTab({ factor, setPueblo, getFactorExcluding, activeFilters }: {
         <div className="space-y-6">
           {Object.entries(RAW_DATA.puebloTipo).sort((a,b)=>b[1]-a[1]).map(([name, value], idx) => {
             const v = Math.round(value * factor);
-            const total = Math.round(58 * factor); // Max value for scale
+            const total = Math.round(58 * factor);
             return (
               <motion.div key={name} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: idx * 0.05 }} className="group">
                 <div className="flex items-center justify-between mb-2">
