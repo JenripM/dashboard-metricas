@@ -61,3 +61,13 @@ h1, h2, h3, h4, h5, h6 {
 .recharts-tooltip-item {
   @apply !text-xs !font-medium;
 }
+
+/* Remove black border/outline on focus for Recharts elements */
+.recharts-surface:focus,
+.recharts-bar-rectangle:focus,
+.recharts-pie-sector:focus,
+.recharts-sector:focus,
+.recharts-curve:focus,
+.recharts-rectangle:focus {
+  outline: none !important;
+}

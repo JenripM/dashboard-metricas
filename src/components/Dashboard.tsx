@@ -59,24 +59,27 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<TabType>('general');
   const [showModal, setShowModal] = useState(false);
 
-  // Scaling logic from prueba.html
+  // Multipliers for each dimension
+  const multipliers = useMemo(() => ({
+    anio: anio === 'all' ? 1 : (anio === '2024' ? 220/648 : (anio === '2025' ? 288/648 : 140/648)),
+    genero: genero === 'all' ? 1 : (genero === 'Hombre' ? 371/648 : 277/648),
+    pueblo: pueblo === 'all' ? 1 : (pueblo === 'Si' ? 200/648 : 439/648),
+    rol: rol === 'all' ? 1 : (rol === 'Estudiante' ? 622/648 : 25/648)
+  }), [anio, genero, pueblo, rol]);
+
+  // Total scaling factor (global)
   const factor = useMemo(() => {
+    return multipliers.anio * multipliers.genero * multipliers.pueblo * multipliers.rol;
+  }, [multipliers]);
+
+  // Factor excluding a specific dimension (for dimension-aware charts)
+  const getFactorExcluding = (dim: keyof typeof multipliers) => {
     let f = 1;
-    if (anio === '2024') f *= 220 / 648;
-    else if (anio === '2025') f *= 288 / 648;
-    else if (anio === '2026') f *= 140 / 648;
-
-    if (genero === 'Hombre') f *= 371 / 648;
-    else if (genero === 'Mujer') f *= 277 / 648;
-
-    if (pueblo === 'Si') f *= 200 / 648;
-    else if (pueblo === 'No') f *= 439 / 648;
-
-    if (rol === 'Estudiante') f *= 622 / 648;
-    else if (rol === 'Docente') f *= 25 / 648;
-
+    Object.entries(multipliers).forEach(([key, val]) => {
+      if (key !== dim) f *= val;
+    });
     return f;
-  }, [anio, genero, pueblo, rol]);
+  };
 
   // Memoized stats based on factor
   const stats = useMemo(() => {
@@ -94,8 +97,8 @@ export default function Dashboard() {
       quechua: quechuaCount, 
       orgulloso: orgullosoCount, 
       servicios: serviciosCount,
-      puebloPct: Math.round((puebloCount / total) * 100),
-      discPct: Math.round((discCount / total) * 100)
+      puebloPct: total > 0 ? Math.round((puebloCount / total) * 100) : 0,
+      discPct: total > 0 ? Math.round((discCount / total) * 100) : 0
     };
   }, [factor]);
 
@@ -237,9 +240,9 @@ export default function Dashboard() {
               transition={{ duration: 0.3 }}
               className="space-y-8 pb-20"
             >
-              {activeTab === 'general' && <GeneralTab factor={factor} setGenero={setGenero} setAnio={setAnio} />}
-              {activeTab === 'lengua' && <LenguaTab factor={factor} setPueblo={setPueblo} />}
-              {activeTab === 'discriminacion' && <DiscriminacionTab factor={factor} setAnio={setAnio} />}
+              {activeTab === 'general' && <GeneralTab factor={factor} setGenero={setGenero} setAnio={setAnio} getFactorExcluding={getFactorExcluding} activeFilters={{anio, genero}} />}
+              {activeTab === 'lengua' && <LenguaTab factor={factor} setPueblo={setPueblo} getFactorExcluding={getFactorExcluding} activeFilters={{pueblo}} />}
+              {activeTab === 'discriminacion' && <DiscriminacionTab factor={factor} setAnio={setAnio} getFactorExcluding={getFactorExcluding} activeFilters={{anio}} />}
               {activeTab === 'uni' && <UniTab factor={factor} />}
             </motion.div>
           </AnimatePresence>
@@ -304,13 +307,25 @@ function KPICard({ icon, label, value, sub, color, alert }: { icon: React.ReactN
 }
 
 // Tab Content Components
-function GeneralTab({ factor, setGenero, setAnio }: { factor: number, setGenero: (val: string) => void, setAnio: (val: string) => void }) {
+function GeneralTab({ factor, setGenero, setAnio, getFactorExcluding, activeFilters }: { 
+  factor: number, 
+  setGenero: (val: string) => void, 
+  setAnio: (val: string) => void,
+  getFactorExcluding: (dim: any) => number,
+  activeFilters: { anio: string, genero: string }
+}) {
+  const fGen = getFactorExcluding('genero');
   const genData = [
-    { name: 'Hombre', value: Math.round(RAW_DATA.genero.Hombre * factor) },
-    { name: 'Mujer', value: Math.round((RAW_DATA.genero.Mujer + RAW_DATA.genero['Mujer, No indica']) * factor) }
+    { name: 'Hombre', value: (activeFilters.genero === 'all' || activeFilters.genero === 'Hombre') ? Math.round(RAW_DATA.genero.Hombre * fGen) : 0 },
+    { name: 'Mujer', value: (activeFilters.genero === 'all' || activeFilters.genero === 'Mujer') ? Math.round((RAW_DATA.genero.Mujer + RAW_DATA.genero['Mujer, No indica']) * fGen) : 0 }
   ];
 
-  const anioData = Object.entries(RAW_DATA.anios).map(([name, value]) => ({ name, value: Math.round(value * factor) }));
+  const fAnio = getFactorExcluding('anio');
+  const anioData = Object.entries(RAW_DATA.anios).map(([name, value]) => ({ 
+    name, 
+    value: (activeFilters.anio === 'all' || activeFilters.anio === name) ? Math.round(value * fAnio) : 0 
+  }));
+
   const edadData = Object.entries(RAW_DATA.edad).map(([name, value]) => ({ name, value: Math.round(value * factor) }));
   const dptoData = Object.entries(RAW_DATA.dpto)
     .map(([name, value]) => ({ name, value: Math.round(value * factor) }))
@@ -319,10 +334,6 @@ function GeneralTab({ factor, setGenero, setAnio }: { factor: number, setGenero:
 
   const onPieClick = (data: any) => {
     if (data && data.name) setGenero(data.name);
-  };
-
-  const onBarClick = (data: any) => {
-    if (data && data.name) setAnio(data.name);
   };
 
   return (
@@ -342,8 +353,9 @@ function GeneralTab({ factor, setGenero, setAnio }: { factor: number, setGenero:
                 paddingAngle={8} 
                 cornerRadius={4}
                 dataKey="value"
+                stroke="none"
                 onClick={onPieClick}
-                className="cursor-pointer"
+                className="cursor-pointer focus:outline-none"
               >
                 {genData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
               </Pie>
@@ -365,7 +377,7 @@ function GeneralTab({ factor, setGenero, setAnio }: { factor: number, setGenero:
               <XAxis dataKey="name" axisLine={false} tickLine={false} />
               <YAxis axisLine={false} tickLine={false} />
               <Tooltip cursor={{fill: 'rgba(55,138,221,0.05)'}} />
-              <Bar dataKey="value" fill="#378ADD" radius={[6, 6, 0, 0]} barSize={40} className="cursor-pointer" />
+              <Bar dataKey="value" fill="#378ADD" radius={[6, 6, 0, 0]} barSize={40} className="cursor-pointer focus:outline-none" activeBar={false} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -406,15 +418,21 @@ function GeneralTab({ factor, setGenero, setAnio }: { factor: number, setGenero:
   );
 }
 
-function LenguaTab({ factor, setPueblo }: { factor: number, setPueblo: (val: string) => void }) {
+function LenguaTab({ factor, setPueblo, getFactorExcluding, activeFilters }: { 
+  factor: number, 
+  setPueblo: (val: string) => void,
+  getFactorExcluding: (dim: any) => number,
+  activeFilters: { pueblo: string }
+}) {
   const lenguaData = Object.entries(RAW_DATA.lengua)
     .map(([name, value]) => ({ name, value: Math.round(value * factor) }))
     .sort((a, b) => b.value - a.value)
     .slice(0, 6);
 
+  const fPueblo = getFactorExcluding('pueblo');
   const puebloData = [
-    { name: 'Si', value: Math.round(RAW_DATA.pueblo.Sí * factor) },
-    { name: 'No', value: Math.round((RAW_DATA.pueblo.No + RAW_DATA.pueblo['Sí/No']) * factor) }
+    { name: 'Si', value: (activeFilters.pueblo === 'all' || activeFilters.pueblo === 'Si') ? Math.round(RAW_DATA.pueblo.Sí * fPueblo) : 0 },
+    { name: 'No', value: (activeFilters.pueblo === 'all' || activeFilters.pueblo === 'No') ? Math.round((RAW_DATA.pueblo.No + RAW_DATA.pueblo['Sí/No']) * fPueblo) : 0 }
   ];
 
   const puebloTipoData = Object.entries(RAW_DATA.puebloTipo)
@@ -454,8 +472,9 @@ function LenguaTab({ factor, setPueblo }: { factor: number, setPueblo: (val: str
                 outerRadius={80} 
                 cornerRadius={4}
                 dataKey="value"
+                stroke="none"
                 onClick={onPieClick}
-                className="cursor-pointer"
+                className="cursor-pointer focus:outline-none"
               >
                 <Cell fill="#1D9E75" />
                 <Cell fill="#E24B4A" />
@@ -489,7 +508,12 @@ function LenguaTab({ factor, setPueblo }: { factor: number, setPueblo: (val: str
   );
 }
 
-function DiscriminacionTab({ factor, setAnio }: { factor: number, setAnio: (val: string) => void }) {
+function DiscriminacionTab({ factor, setAnio, getFactorExcluding, activeFilters }: { 
+  factor: number, 
+  setAnio: (val: string) => void,
+  getFactorExcluding: (dim: any) => number,
+  activeFilters: { anio: string }
+}) {
   const discData = [
     { name: 'No', value: Math.round(RAW_DATA.disc.No * factor) },
     { name: 'Sí', value: Math.round((RAW_DATA.disc.Sí + RAW_DATA.disc['No/Sí']) * factor) }
@@ -501,8 +525,11 @@ function DiscriminacionTab({ factor, setAnio }: { factor: number, setAnio: (val:
     { name: 'Mujer', sí: Math.round(dg.Mujer.Sí * factor), no: Math.round(dg.Mujer.No * factor) }
   ];
 
+  const fAnio = getFactorExcluding('anio');
   const anioData = Object.entries(RAW_DATA.discAnio).map(([name, val]) => ({
-    name, sí: Math.round(val.Sí * factor), no: Math.round(val.No * factor)
+    name, 
+    sí: (activeFilters.anio === 'all' || activeFilters.anio === name) ? Math.round(val.Sí * fAnio) : 0, 
+    no: (activeFilters.anio === 'all' || activeFilters.anio === name) ? Math.round(val.No * fAnio) : 0
   }));
 
   return (
@@ -512,7 +539,7 @@ function DiscriminacionTab({ factor, setAnio }: { factor: number, setAnio: (val:
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
-              <Pie data={discData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} cornerRadius={4} dataKey="value">
+              <Pie data={discData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} cornerRadius={4} dataKey="value" stroke="none">
                 <Cell fill="#1D9E75" />
                 <Cell fill="#E24B4A" />
               </Pie>
@@ -550,8 +577,8 @@ function DiscriminacionTab({ factor, setAnio }: { factor: number, setAnio: (val:
               <YAxis axisLine={false} tickLine={false} />
               <Tooltip />
               <Legend />
-              <Bar dataKey="sí" stackId="a" fill="#E24B4A" className="cursor-pointer" />
-              <Bar dataKey="no" stackId="a" fill="#1D9E75" radius={[6, 6, 0, 0]} className="cursor-pointer" />
+              <Bar dataKey="sí" stackId="a" fill="#E24B4A" className="cursor-pointer focus:outline-none" activeBar={false} />
+              <Bar dataKey="no" stackId="a" fill="#1D9E75" radius={[6, 6, 0, 0]} className="cursor-pointer focus:outline-none" activeBar={false} />
             </BarChart>
           </ResponsiveContainer>
         </div>
